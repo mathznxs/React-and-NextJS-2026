@@ -1,69 +1,50 @@
 import { useState } from "react";
-
 function App() {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [idade, setIdade] = useState(0);
-
-  const [user, setUser] = useState({
-    nome: "Sr. Fulano",
-    idade: 22,
-    email: "srfulano@gmail.com",
-  });
-
-  // const [users, setUsers] = useState([]);
-
+  const [input, setInput] = useState("");
+  const [tarefa, setTarefa] = useState([
+    { id: 1, nome: "Estudar React" },
+    { id: 2, nome: "Pagar conta de luz" },
+  ]);
   function handleRegister(e) {
     e.preventDefault();
 
-    alert("Usuário criado com sucesso!");
-    setUser({
-      nome: nome,
-      idade: idade,
-      email: email,
-    });
+    const newTask = {
+      id: Date.now(),
+      nome: input,
+    };
+
+    setTarefa((prev) => [...prev, newTask]);
+
+    setInput("");
   }
 
+  function handleDeleteTask(id) {
+    setTarefa((prev) => prev.filter(item => item.id !== id));
+  }
   return (
     <div>
       <h1>Cadastrando usuários</h1>
       <form onSubmit={handleRegister} className="forms">
-        <br />
-        <label>Nome</label>
-        <br />
+        <br /> <label>Nome da tarefa: </label>
         <input
-          placeholder="Digite seu nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
+          placeholder="Digite uma tarefa"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
         />
-        <br />
-        <label>Idade</label>
-        <br />
-        <input
-          placeholder="Digite sua idade"
-          value={idade}
-          onChange={(e) => setIdade(e.target.value)}
-        />
-        <br />
-        <label>Email</label>
-        <br />
-        <input
-          placeholder="Digite seu email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <br />
+        <br /> <br />
         <button type="submit" className="button-forms">
           Cadastrar usuário
         </button>
       </form>
-
       <div className="users">
-        <span>Bem vindo: {user.nome}</span>
-        <br />
-        <span>Idade: {user.idade}</span>
-        <br />
-        <span>Email: {user.email}</span>
+        <ul>
+          {tarefa.map((item) => (
+            <div key={item.id} className="task">
+              <li>{item.nome}</li>
+              <button onClick={ () =>  handleDeleteTask(item.id)}>Deletar tarefa</button>
+            </div>
+          ))}
+        </ul>
       </div>
     </div>
   );
