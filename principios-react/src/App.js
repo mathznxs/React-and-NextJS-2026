@@ -1,47 +1,66 @@
 import { useState } from "react";
+
 function App() {
+  const [task, setTask] = useState([]);
   const [input, setInput] = useState("");
-  const [tarefa, setTarefa] = useState([
-    { id: 1, nome: "Estudar React" },
-    { id: 2, nome: "Pagar conta de luz" },
-  ]);
+  const [editingTask, setEditingTask] = useState(null);
+
   function handleRegister(e) {
     e.preventDefault();
 
-    const newTask = {
-      id: Date.now(),
-      nome: input,
-    };
+    if (!input.trim()) return;
 
-    setTarefa((prev) => [...prev, newTask]);
+    if (editingTask) {
+      setTask((prev) =>
+        prev.map((item) =>
+          item.id === editingTask.id ? { ...item, nome: input } : item,
+        ),
+      );
+      setEditingTask(null);
+    } else {
+      const newTask = {
+        id: Date.now(),
+        nome: input,
+      };  
 
+      setTask((prev) => [...prev, newTask]);
+    }
     setInput("");
   }
 
   function handleDeleteTask(id) {
-    setTarefa((prev) => prev.filter(item => item.id !== id));
+    setTask((prev) => prev.filter((item) => item.id !== id));
   }
+
   return (
     <div>
-      <h1>Cadastrando usuários</h1>
-      <form onSubmit={handleRegister} className="forms">
-        <br /> <label>Nome da tarefa: </label>
-        <input
-          placeholder="Digite uma tarefa"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <br /> <br />
-        <button type="submit" className="button-forms">
-          Cadastrar usuário
-        </button>
+      <h1>Cadastrando Tarefas</h1>
+
+      <form onSubmit={handleRegister} className="form">
+        <div className="input-task">
+          <input
+            placeholder="Digite uma tarefa"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+        </div>
+        <button type="submit">{editingTask ? "Salvar" : "Cadastrar"}</button>
       </form>
-      <div className="users">
-        <ul>
-          {tarefa.map((item) => (
-            <div key={item.id} className="task">
+
+      <div>
+        <ul className="task-list">
+          {task.map((item) => (
+            <div key={item.id}>
               <li>{item.nome}</li>
-              <button onClick={ () =>  handleDeleteTask(item.id)}>Deletar tarefa</button>
+              <button onClick={() => handleDeleteTask(item.id)}>Deletar</button>
+              <button
+                onClick={() => {
+                  setEditingTask(item);
+                  setInput(item.nome);
+                }}
+              >
+                Editar
+              </button>
             </div>
           ))}
         </ul>
